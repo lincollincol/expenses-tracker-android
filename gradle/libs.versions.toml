@@ -12,6 +12,7 @@ navigationCompose = "2.8.9"
 appcompat = "1.7.0"
 material = "1.12.0"
 serialization = "1.8.0"
+materialMotionCompose = "1.2.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -32,6 +33,7 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
+material-motion-compose = { group = "io.github.fornewid", name = "material-motion-compose-core", version.ref = "materialMotionCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -27,6 +27,6 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.name = "expenses-tracker"
 
 include(":app")
-include(":feature")
+include(":core:ui")
 include(":feature:home")
 include(":feature:transaction")
