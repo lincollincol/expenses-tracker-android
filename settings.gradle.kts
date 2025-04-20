@@ -19,5 +19,14 @@ dependencyResolutionManagement {
     }
 }
 
+/**
+ * Enable typesafe projects accessors feature (e.g. projects.feature.home)
+ */
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 rootProject.name = "expenses-tracker"
+
 include(":app")
+include(":feature")
+include(":feature:home")
+include(":feature:transaction")
