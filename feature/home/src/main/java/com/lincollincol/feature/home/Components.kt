@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,7 +19,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,12 +26,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lincollincol.core.ui.component.ETButton
+import com.lincollincol.core.ui.extensions.rememberCurrencyValueFormatter
 import com.lincollincol.core.ui.theme.ExpensesTrackerTheme
+import java.text.DecimalFormat
 
 @Composable
 fun SectionHeading(
@@ -66,10 +66,14 @@ private fun SectionHeadingPreview() {
 }
 
 @Composable
-internal fun TransactionItem(modifier: Modifier = Modifier) {
+internal fun TransactionItem(
+    modifier: Modifier = Modifier,
+    paddings: PaddingValues = PaddingValues(bottom = 4.dp)
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(paddings)
             .clip(RoundedCornerShape(14.dp))
             .background(MaterialTheme.colorScheme.surface)
             .border(
@@ -122,12 +126,15 @@ private fun TransactionItemPreview() {
 }
 
 @Composable
-internal fun HomeHeader(
+internal fun BalanceBanner(
     modifier: Modifier = Modifier,
+    balanceBtc: Float,
+    balanceUsd: Float,
     onAddFundsClick: () -> Unit,
     onAddTransactionClick: () -> Unit
 ) {
     Column(modifier) {
+        val formatter = rememberCurrencyValueFormatter()
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -144,7 +151,7 @@ internal fun HomeHeader(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = "0.84 BTC"/*buildAnnotatedString {
+                text = "${formatter.format(balanceBtc)} BTC"/*buildAnnotatedString {
                     append("0.84")
                     withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)) {
                         append(" BTC")
@@ -153,7 +160,7 @@ internal fun HomeHeader(
                 style = MaterialTheme.typography.titleLarge,
             )
             Text(
-                text = "~68.272,12 USD",
+                text = "${formatter.format(balanceUsd)} USD",
                 style = MaterialTheme.typography.titleMedium,
             )
         }
@@ -182,9 +189,11 @@ internal fun HomeHeader(
 
 @Preview
 @Composable
-private fun HomeHeaderPreview() {
+private fun BalanceBannerPreview() {
     ExpensesTrackerTheme {
-        HomeHeader(
+        BalanceBanner(
+            balanceBtc = 0F,
+            balanceUsd = 0F,
             onAddFundsClick = {},
             onAddTransactionClick = {}
         )
