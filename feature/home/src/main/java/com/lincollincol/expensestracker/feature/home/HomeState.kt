@@ -1,12 +1,25 @@
 package com.lincollincol.expensestracker.feature.home
 
+import com.lincollincol.expensestracker.core.model.Transaction
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Locale
+
 internal data class HomeUiState(
     val balanceBtc: Float,
     val balanceUsd: Float,
     val exchangeRateBtcUsd: Float,
+    val transactions: Map<String, List<Transaction>>
 ) {
     companion object {
-        val Empty get() = HomeUiState(0F, 0F, 0F)
+        val Empty get() = HomeUiState(
+            0F,
+            0F,
+            0F,
+            emptyMap()
+        )
     }
 }
 

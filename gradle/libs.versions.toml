@@ -14,6 +14,7 @@ material = "1.12.0"
 serialization = "1.8.0"
 materialMotionCompose = "1.2.1"
 hilt = "2.56.1"
+hiltCompose = "1.2.0"
 ksp = "2.0.21-1.0.28"
 
 [libraries]
@@ -38,6 +39,7 @@ kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 material-motion-compose = { group = "io.github.fornewid", name = "material-motion-compose-core", version.ref = "materialMotionCompose" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
+hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltCompose" }
 
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }

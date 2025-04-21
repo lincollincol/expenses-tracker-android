@@ -1,15 +1,46 @@
 package com.lincollincol.expensestracker.feature.home
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.lincollincol.expensestracker.core.data.AccountRepository
+import com.lincollincol.expensestracker.core.data.ExchangeRepository
 import com.lincollincol.expensestracker.core.ui.extensions.REGEX_PATTERN_CURRENCY_INPUT
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Locale
+import javax.inject.Inject
+import kotlin.coroutines.coroutineContext
 
-internal class HomeViewModel : ViewModel() {
+@HiltViewModel
+internal class HomeViewModel @Inject constructor(
+    private val accountRepository: AccountRepository,
+    private val exchangeRepository: ExchangeRepository,
+) : ViewModel() {
 
-    private val _homeUiState = MutableStateFlow(HomeUiState.Empty)
-    val homeUiState get() = _homeUiState.asStateFlow()
+    val homeUiState: StateFlow<HomeUiState> = accountRepository.getTransactionsStream()
+        .map { transactions ->
+            HomeUiState(
+                balanceBtc = 0F,
+                balanceUsd = 0F,
+                exchangeRateBtcUsd = 0F,
+                transactions = transactions.groupBy { formatTimestamp(it.date) }
+            )
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = HomeUiState.Empty
+        )
 
     private val _depositUiState = MutableStateFlow(DepositUiState.Empty)
     val depositUiState get() = _depositUiState.asStateFlow()
@@ -36,5 +67,15 @@ internal class HomeViewModel : ViewModel() {
     fun depositToBalance() = _depositUiState.update { it.copy(isVisible = true) }
 
     fun cancelDepositToBalance() = _depositUiState.update { it.copy(isVisible = false) }
+
+    private fun formatTimestamp(timestamp: Long): String {
+        val zoneId = ZoneId.systemDefault()
+        val today = LocalDate.now(zoneId)
+        return when (val date = Instant.ofEpochMilli(timestamp).atZone(zoneId).toLocalDate()) {
+            today -> "Today"
+            today.minusDays(1) -> "Yesterday"
+            else -> date.format(DateTimeFormatter.ofPattern("MMMM d", Locale.getDefault()))
+        }
+    }
 
 }

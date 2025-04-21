@@ -23,6 +23,8 @@ class FeaturePlugin : Plugin<Project> {
         dependencies {
             implementation(project(":core:ui"))
             implementation(project(":core:model"))
+            implementation(project(":core:data"))
+            implementation(libs.hilt.navigation.compose)
         }
     }
 }

@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
+import java.text.SimpleDateFormat
 import java.util.Locale
 
 @Composable
@@ -16,5 +17,15 @@ fun rememberCurrencyValueFormatter(
             decimalSeparator = ','
             groupingSeparator = ' '
         })
+    }
+}
+
+@Composable
+fun rememberTimeFormatter(
+    locale: Locale = Locale.getDefault(),
+    pattern: String = SDF_PATTERN_HMS_24H
+): SimpleDateFormat {
+    return remember {
+        SimpleDateFormat(pattern, locale)
     }
 }

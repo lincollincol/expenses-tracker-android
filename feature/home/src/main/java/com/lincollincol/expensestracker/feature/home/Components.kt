@@ -1,5 +1,7 @@
 package com.lincollincol.expensestracker.feature.home
 
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,18 +25,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lincollincol.expensestracker.core.ui.component.ETButton
 import com.lincollincol.expensestracker.core.ui.extensions.rememberCurrencyValueFormatter
+import com.lincollincol.expensestracker.core.ui.extensions.rememberTimeFormatter
 import com.lincollincol.expensestracker.core.ui.theme.ExpensesTrackerTheme
+import java.text.SimpleDateFormat
 
 @Composable
 internal fun TransactionItem(
     modifier: Modifier = Modifier,
-    paddings: PaddingValues = PaddingValues(bottom = 4.dp)
+    @DrawableRes icon: Int,
+    @StringRes name: Int,
+    date: Long,
+    expense: String,
+    paddings: PaddingValues = PaddingValues(bottom = 4.dp),
 ) {
+    val timeFormatter = rememberTimeFormatter()
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -54,8 +65,8 @@ internal fun TransactionItem(
             modifier = Modifier
                 .size(48.dp)
                 .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.7F)),
-            imageVector = Icons.Default.ShoppingCart,
+                .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.75F)),
+            painter = painterResource(icon),
             contentDescription = "",
             contentScale = ContentScale.None,
             colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondary)
@@ -66,17 +77,20 @@ internal fun TransactionItem(
                 .weight(1F)
         ) {
             Text(
-                text = "Food",
+                text = stringResource(name),
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.SemiBold
             )
-            Text(text = "12:56")
+            Text(
+                text = timeFormatter.format(date),
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.Normal
+            )
         }
         Text(
-            text = "$16.23",
+            text = expense,
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.SemiBold
-
         )
     }
 }
@@ -86,7 +100,12 @@ internal fun TransactionItem(
 @Composable
 private fun TransactionItemPreview() {
     ExpensesTrackerTheme {
-        TransactionItem()
+        TransactionItem(
+            icon = com.lincollincol.expensestracker.core.ui.R.drawable.ic_btc,
+            name = com.lincollincol.expensestracker.core.ui.R.string.category_other,
+            date = System.currentTimeMillis(),
+            expense = "0,01 BTC"
+        )
     }
 }
 
