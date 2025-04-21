@@ -4,10 +4,12 @@ plugins {
 
 dependencies {
 
+    implementation(projects.core.common)
     implementation(projects.core.ui)
     implementation(projects.core.model)
     implementation(projects.core.data)
     implementation(projects.core.network)
+    implementation(projects.core.database)
     implementation(projects.feature.home)
     implementation(projects.feature.transaction)
 

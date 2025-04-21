@@ -2,9 +2,9 @@ package com.lincollincol.expensestracker.feature.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lincollincol.expensestracker.core.common.REGEX_PATTERN_CURRENCY_INPUT
 import com.lincollincol.expensestracker.core.data.AccountRepository
 import com.lincollincol.expensestracker.core.data.ExchangeRepository
-import com.lincollincol.expensestracker.core.ui.extensions.REGEX_PATTERN_CURRENCY_INPUT
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
