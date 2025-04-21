@@ -27,7 +27,9 @@ fun ExpensesTrackerApp() {
                 onAddFundsClick = {},
                 onAddTransactionClick = { navController.navigateToTransaction() }
             )
-            transactionScreen()
+            transactionScreen(
+                onBackClick = { navController.navigateUp() }
+            )
         }
     }
 }

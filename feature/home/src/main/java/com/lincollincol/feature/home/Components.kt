@@ -31,44 +31,6 @@ import androidx.compose.ui.unit.dp
 import com.lincollincol.core.ui.component.ETButton
 import com.lincollincol.core.ui.extensions.rememberCurrencyValueFormatter
 import com.lincollincol.core.ui.theme.ExpensesTrackerTheme
-import java.text.DecimalFormat
-
-@Composable
-fun SectionHeading(
-    modifier: Modifier = Modifier,
-    text: String,
-    trailingContent: @Composable RowScope.() -> Unit = {}
-) {
-    Column(
-        modifier = Modifier
-            .background(MaterialTheme.colorScheme.background)
-            .then(modifier)
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(top = 24.dp, bottom = 16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = text,
-                style = MaterialTheme.typography.headlineMedium,
-            )
-            trailingContent(this)
-        }
-        HorizontalDivider(
-            color = MaterialTheme.colorScheme.outline
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun SectionHeadingPreview() {
-    ExpensesTrackerTheme {
-        SectionHeading(text = "Section") {  }
-    }
-}
 
 @Composable
 internal fun TransactionItem(

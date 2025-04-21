@@ -1,9 +1,15 @@
 package com.lincollincol.core.ui.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -24,7 +30,7 @@ fun NumberInput(
     value: String,
     suffix: String,
     onValueChange: (String) -> Unit,
-    onSuffixClick: () -> Unit,
+    onSuffixClick: () -> Unit = {},
 ) {
     TextField(
         modifier = Modifier
@@ -67,5 +73,42 @@ private fun NumberInputPreview() {
             onValueChange = {},
             onSuffixClick = {}
         )
+    }
+}
+
+@Composable
+fun SectionHeading(
+    modifier: Modifier = Modifier,
+    text: String,
+    trailingContent: @Composable RowScope.() -> Unit = {}
+) {
+    Column(
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.background)
+            .then(modifier)
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(top = 24.dp, bottom = 16.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.headlineMedium,
+            )
+            trailingContent(this)
+        }
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.outline
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun SectionHeadingPreview() {
+    ExpensesTrackerTheme {
+        SectionHeading(text = "Section") {  }
     }
 }
