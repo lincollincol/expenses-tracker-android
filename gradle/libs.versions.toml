@@ -13,6 +13,8 @@ appcompat = "1.7.0"
 material = "1.12.0"
 serialization = "1.8.0"
 materialMotionCompose = "1.2.1"
+hilt = "2.56.1"
+ksp = "2.0.21-1.0.28"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -34,6 +36,11 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
 material-motion-compose = { group = "io.github.fornewid", name = "material-motion-compose-core", version.ref = "materialMotionCompose" }
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
+
+android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
+kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -41,4 +48,12 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
+# App defined plugins
+expensestracker-application = { id = "expensestracker.application", version = "unspecified" }
+expensestracker-library = { id = "expensestracker.library", version = "unspecified" }
+expensestracker-feature = { id = "expensestracker.feature", version = "unspecified" }
+expensestracker-compose = { id = "expensestracker.compose", version = "unspecified" }
+expensestracker-hilt = { id = "expensestracker.hilt", version = "unspecified" }

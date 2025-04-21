@@ -8,11 +8,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.lincollincol.core.ui.theme.ExpensesTrackerTheme
-import com.lincollincol.feature.home.HomeScreen
-import com.lincollincol.feature.home.homeScreen
-import com.lincollincol.feature.transaction.navigateToTransaction
-import com.lincollincol.feature.transaction.transactionScreen
+import com.lincollincol.expensestracker.core.ui.theme.ExpensesTrackerTheme
+import com.lincollincol.expensestracker.feature.home.HomeScreen
+import com.lincollincol.expensestracker.feature.home.homeScreen
+import com.lincollincol.expensestracker.feature.transaction.navigateToTransaction
+import com.lincollincol.expensestracker.feature.transaction.transactionScreen
 
 @Composable
 fun ExpensesTrackerApp() {
