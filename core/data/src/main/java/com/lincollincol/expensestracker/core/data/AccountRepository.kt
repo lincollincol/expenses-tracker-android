@@ -5,11 +5,6 @@ import com.lincollincol.expensestracker.core.model.Transaction
 import kotlinx.coroutines.flow.Flow
 
 interface AccountRepository {
+    fun getCryptoAccountStream(): Flow<CryptoAccount>
     suspend fun getCryptoAccount(): CryptoAccount
-    suspend fun makeTransaction(
-        account: CryptoAccount,
-        amount: Float,
-        category: Transaction.Category
-    )
-    fun getTransactionsStream(): Flow<List<Transaction>>
 }

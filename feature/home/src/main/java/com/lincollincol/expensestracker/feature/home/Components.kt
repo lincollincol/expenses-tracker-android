@@ -2,6 +2,7 @@ package com.lincollincol.expensestracker.feature.home
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -118,7 +119,7 @@ private fun TransactionItemPreview() {
 internal fun BalanceBanner(
     modifier: Modifier = Modifier,
     balanceBtc: Float,
-    balanceUsd: Float,
+    balanceUsd: Float?,
     onAddFundsClick: () -> Unit,
     onAddTransactionClick: () -> Unit
 ) {
@@ -140,18 +141,15 @@ internal fun BalanceBanner(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = "${formatter.format(balanceBtc)} BTC"/*buildAnnotatedString {
-                    append("0.84")
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)) {
-                        append(" BTC")
-                    }
-                }*/,
+                text = "${formatter.format(balanceBtc)} BTC",
                 style = MaterialTheme.typography.titleLarge,
             )
-            Text(
-                text = "${formatter.format(balanceUsd)} USD",
-                style = MaterialTheme.typography.titleMedium,
-            )
+            if (balanceUsd != null) {
+                Text(
+                    text = "${formatter.format(balanceUsd)} USD",
+                    style = MaterialTheme.typography.titleMedium,
+                )
+            }
         }
         Row(
             modifier = Modifier

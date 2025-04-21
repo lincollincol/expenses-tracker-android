@@ -4,6 +4,8 @@ import com.lincollincol.expensestracker.core.data.AccountRepository
 import com.lincollincol.expensestracker.core.data.AccountRepositoryImpl
 import com.lincollincol.expensestracker.core.data.ExchangeRepository
 import com.lincollincol.expensestracker.core.data.ExchangeRepositoryImpl
+import com.lincollincol.expensestracker.core.data.TransactionRepository
+import com.lincollincol.expensestracker.core.data.TransactionRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -18,5 +20,8 @@ internal interface RepositoryModule {
 
     @Binds
     fun bindExchangeRepository(impl: ExchangeRepositoryImpl): ExchangeRepository
+
+    @Binds
+    fun bindTransactionRepository(impl: TransactionRepositoryImpl): TransactionRepository
 
 }

@@ -16,7 +16,7 @@ internal class MainViewModel @Inject constructor(
     fun prepareAccount() {
         viewModelScope.launch {
             val account = accountRepository.getCryptoAccount()
-            exchangeRepository.syncExchangeRate(account.currencyId)
+            exchangeRepository.syncExchangeRate(account.currency.id)
         }
     }
 }

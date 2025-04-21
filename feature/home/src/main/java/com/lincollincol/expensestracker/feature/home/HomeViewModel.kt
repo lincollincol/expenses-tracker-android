@@ -2,14 +2,18 @@ package com.lincollincol.expensestracker.feature.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lincollincol.expensestracker.core.common.REGEX_PATTERN_CURRENCY_INPUT
+import androidx.paging.insertSeparators
+import androidx.paging.map
 import com.lincollincol.expensestracker.core.data.AccountRepository
 import com.lincollincol.expensestracker.core.data.ExchangeRepository
+import com.lincollincol.expensestracker.core.data.TransactionRepository
+import com.lincollincol.expensestracker.core.model.Transaction
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -20,38 +24,59 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import javax.inject.Inject
-import kotlin.coroutines.coroutineContext
 
 @HiltViewModel
 internal class HomeViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
     private val exchangeRepository: ExchangeRepository,
+    private val transactionRepository: TransactionRepository,
 ) : ViewModel() {
 
-    val homeUiState: StateFlow<HomeUiState> = accountRepository.getTransactionsStream()
-        .map { transactions ->
-            HomeUiState(
-                balanceBtc = 0F,
-                balanceUsd = 0F,
-                exchangeRateBtcUsd = 0F,
-                transactions = transactions.groupBy { formatTimestamp(it.date) }
-            )
-        }
+    val balanceUiState: StateFlow<BalanceUiState> = combine(
+        accountRepository.getCryptoAccountStream(),
+        exchangeRepository.getAccountExchangeRateStream()
+    ) { account, exchangeRate ->
+        BalanceUiState(
+            balanceBtc = account.balance,
+            balanceUsd = exchangeRate?.priceUsd?.times(account.balance),
+            exchangeRateBtcUsd = exchangeRate?.priceUsd,
+            exchangeRateChangePercent = exchangeRate?.changePercent,
+//            transactions = transactions.groupBy { formatTimestamp(it.date) }
+        )
+    }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = HomeUiState.Empty
+            initialValue = BalanceUiState.Empty
         )
+
+    val transactionsUiState = transactionRepository.getTransactionsStream()
+        .map { paging ->
+            paging.map { TransactionUiState.Item(it) }
+                .insertSeparators { t1: TransactionUiState.Item?, t2: TransactionUiState.Item? ->
+                    val beforeDate = t1?.transaction?.date
+                    val afterDate = t2?.transaction?.date ?: return@insertSeparators null
+
+
+                    val label = formatTimestamp(afterDate)
+                    val beforeLabel = beforeDate?.let { formatTimestamp(it) }
+
+                    if (label != beforeLabel) {
+                        TransactionUiState.Date(label)
+                    } else null
+                }
+
+        }
 
     private val _depositUiState = MutableStateFlow(DepositUiState.Empty)
     val depositUiState get() = _depositUiState.asStateFlow()
 
-    private val depositInputRegex = Regex(REGEX_PATTERN_CURRENCY_INPUT)
+//    private val depositInputRegex = Regex(REGEX_PATTERN_CURRENCY_INPUT)
+    private val depositInputRegex = Regex("^\\d*(,\\d*)?$")
 
-    fun test() {
+    fun maket() {
         viewModelScope.launch {
-            val rate = exchangeRepository.getExchangeRate("")
-            println("=> $rate")
+            transactionRepository.makeTransaction(0F, Transaction.Category.OTHER)
         }
     }
 
@@ -61,18 +86,22 @@ internal class HomeViewModel @Inject constructor(
                 value.isEmpty() || depositInputRegex.matches(value) -> value
                 else -> it.input
             }
-            // TODO: calculate equivalent based on exchangeRateBtcUsd
-            // val equivalent = homeUiState.value.exchangeRateBtcUsd
             it.copy(input = input)
         }
     }
 
     fun saveDepositValue() {
         // TODO: update balance
+//        accountRepository.makeTransaction()
         cancelDepositToBalance()
     }
 
-    fun depositToBalance() = _depositUiState.update { it.copy(isVisible = true) }
+    fun depositToBalance() {
+        val exchangeRate = balanceUiState.value.exchangeRateBtcUsd
+        _depositUiState.update {
+            it.copy(exchangeRateBtcUsd = exchangeRate ?: 0F, isVisible = true)
+        }
+    }
 
     fun cancelDepositToBalance() = _depositUiState.update { it.copy(isVisible = false) }
 

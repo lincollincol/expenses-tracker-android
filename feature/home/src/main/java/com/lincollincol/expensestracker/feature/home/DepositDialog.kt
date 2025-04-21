@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,10 +45,7 @@ fun DepositDialog(
                 modifier = Modifier.padding(bottom = 24.dp),
                 text = "Update Balance",
                 style = MaterialTheme.typography.headlineMedium,
-            )
-            Text(
-                text = "Amount",
-                style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp),
+                fontWeight = FontWeight.SemiBold
             )
             NumberInput(
                 modifier = Modifier.padding(vertical = 12.dp),

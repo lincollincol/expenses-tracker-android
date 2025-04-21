@@ -41,7 +41,12 @@ fun NumberInput(
                 shape = RoundedCornerShape(10.dp)
             ),
         value = value,
-        placeholder = { Text("0") },
+        placeholder = {
+            Text(
+                text ="Amount",
+                color = TextFieldDefaults.colors().focusedTextColor.copy(0.5F)
+            )
+        },
         onValueChange = onValueChange,
         maxLines = 1,
         singleLine = true,
@@ -68,7 +73,7 @@ fun NumberInput(
 private fun NumberInputPreview() {
     ExpensesTrackerTheme {
         NumberInput(
-            value = "",
+            value = "12",
             suffix = "USD",
             onValueChange = {},
             onSuffixClick = {}

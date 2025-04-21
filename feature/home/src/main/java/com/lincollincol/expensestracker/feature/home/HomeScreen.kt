@@ -12,20 +12,29 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.lincollincol.expensestracker.core.model.Transaction
 import com.lincollincol.expensestracker.core.ui.component.SectionHeading
 import com.lincollincol.expensestracker.core.ui.extensions.formattedExpense
 import com.lincollincol.expensestracker.core.ui.extensions.iconRes
 import com.lincollincol.expensestracker.core.ui.extensions.nameRes
 import com.lincollincol.expensestracker.core.ui.extensions.rememberCurrencyValueFormatter
+import com.lincollincol.expensestracker.core.ui.theme.DarkGreen
+import com.lincollincol.expensestracker.core.ui.theme.DarkRed
 import com.lincollincol.expensestracker.core.ui.theme.ExpensesTrackerTheme
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 internal fun HomeRoute(
@@ -33,17 +42,19 @@ internal fun HomeRoute(
     onAddFundsClick: () -> Unit,
     onAddTransactionClick: () -> Unit
 ) {
-    val homeUiState by viewModel.homeUiState.collectAsStateWithLifecycle()
+    val homeUiState by viewModel.balanceUiState.collectAsStateWithLifecycle()
     val depositUiState by viewModel.depositUiState.collectAsStateWithLifecycle()
+    val transactionsUiItems = viewModel.transactionsUiState.collectAsLazyPagingItems()
 
     HomeScreen(
-        homeUiState = homeUiState,
+        balanceUiState = homeUiState,
         depositUiState = depositUiState,
-        onAddTransactionClick = onAddTransactionClick,
+        transactionsUiItems = transactionsUiItems,
+//        onAddTransactionClick = onAddTransactionClick,
+        onAddTransactionClick = { viewModel.maket() },
 
         // Screen-level events
-//        onDepositClick = viewModel::depositToBalance,
-        onDepositClick = { viewModel.test() },
+        onDepositClick = viewModel::depositToBalance,
         onDepositValueChange = viewModel::updateDepositValue,
         onDepositSaveClick = viewModel::saveDepositValue,
         onDepositCloseClick = viewModel::cancelDepositToBalance
@@ -52,8 +63,9 @@ internal fun HomeRoute(
 
 @Composable
 internal fun HomeScreen(
-    homeUiState: HomeUiState,
+    balanceUiState: BalanceUiState,
     depositUiState: DepositUiState,
+    transactionsUiItems: LazyPagingItems<TransactionUiState>,
     onDepositClick: () -> Unit,
     onAddTransactionClick: () -> Unit,
     onDepositValueChange: (String) -> Unit,
@@ -67,20 +79,21 @@ internal fun HomeScreen(
             .fillMaxSize(),
     ) {
         balanceSection(
-            balanceBtc = homeUiState.balanceBtc,
-            balanceUsd = homeUiState.balanceUsd,
-            exchangeRateBtcUsd = homeUiState.exchangeRateBtcUsd,
+            balanceBtc = balanceUiState.balanceBtc,
+            balanceUsd = balanceUiState.balanceUsd,
+            exchangeRateBtcUsd = balanceUiState.exchangeRateBtcUsd,
+            exchangeRateChangePercent = balanceUiState.exchangeRateChangePercent,
             onAddFundsClick = onDepositClick,
             onAddTransactionClick = onAddTransactionClick
         )
-        expensesSection(homeUiState.transactions)
+        expensesSection(transactionsUiItems)
     }
     if (depositUiState.isVisible) {
         DepositDialog(
             input = depositUiState.input,
             equivalent = depositUiState.equivalent,
-            inputCurrency = depositUiState.inputCurrency,
-            equivalentCurrency = depositUiState.equivalentCurrency,
+            inputCurrency = depositUiState.inputCurrency.name,
+            equivalentCurrency = depositUiState.equivalentCurrency.name,
             onDepositValueChange = onDepositValueChange,
             onDepositSaveClick = onDepositSaveClick,
             onDismiss = onDepositCloseClick
@@ -91,22 +104,31 @@ internal fun HomeScreen(
 @OptIn(ExperimentalFoundationApi::class)
 private fun LazyListScope.balanceSection(
     balanceBtc: Float,
-    balanceUsd: Float,
-    exchangeRateBtcUsd: Float,
+    balanceUsd: Float?,
+    exchangeRateBtcUsd: Float?,
+    exchangeRateChangePercent: Float?,
     onAddFundsClick: () -> Unit,
     onAddTransactionClick: () -> Unit
 ) {
     stickyHeader {
         SectionHeading(text = "Balance") {
             val formatter = rememberCurrencyValueFormatter()
-            Text(
-                modifier = Modifier.weight(0.5F),
-                text = "1 BTC = ${formatter.format(exchangeRateBtcUsd)} USD",
-                style = MaterialTheme.typography.labelMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                textAlign = TextAlign.End
-            )
+            if (exchangeRateBtcUsd != null && exchangeRateChangePercent != null) {
+                val percentColor = if (exchangeRateChangePercent >= 0) DarkGreen else DarkRed
+                Text(
+                    modifier = Modifier.weight(0.5F),
+                    text = buildAnnotatedString {
+                        append("${formatter.format(exchangeRateBtcUsd)} USD/BTC")
+                        withStyle(style = SpanStyle(color = percentColor)) {
+                            append(" (${formatter.format(exchangeRateChangePercent)}%)")
+                        }
+                    },
+                    style = MaterialTheme.typography.labelMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    textAlign = TextAlign.End
+                )
+            }
         }
     }
     item {
@@ -122,25 +144,25 @@ private fun LazyListScope.balanceSection(
 
 @OptIn(ExperimentalFoundationApi::class)
 private fun LazyListScope.expensesSection(
-    transactions: Map<String, List<Transaction>>
+    transactionsUiItems: LazyPagingItems<TransactionUiState>,
 ) {
     stickyHeader {
-        SectionHeading(text = "Expenses")
+        SectionHeading(text = "Operations")
     }
-    transactions.onEach { transaction ->
-        item {
+    items(transactionsUiItems.itemCount) {
+        val item = transactionsUiItems[it]
+        if (item is TransactionUiState.Date) {
             Text(
                 modifier = Modifier.padding(top = 12.dp, bottom = 8.dp),
-                text = transaction.key,
+                text = item.date,
                 style = MaterialTheme.typography.headlineSmall
             )
-        }
-        items(transaction.value) {
+        } else if (item is TransactionUiState.Item) {
             TransactionItem(
-                icon = it.category.iconRes,
-                name = it.category.nameRes,
-                expense = it.formattedExpense,
-                date = it.date
+                icon = item.transaction.category.iconRes,
+                name = item.transaction.category.nameRes,
+                expense = item.transaction.formattedExpense,
+                date = item.transaction.date
             )
         }
     }
@@ -151,8 +173,9 @@ private fun LazyListScope.expensesSection(
 private fun HomeScreenPreview() {
     ExpensesTrackerTheme {
         HomeScreen(
-            homeUiState = HomeUiState.Empty,
+            balanceUiState = BalanceUiState.Empty,
             depositUiState = DepositUiState.Empty,
+            transactionsUiItems = MutableStateFlow(PagingData.empty<TransactionUiState>()).collectAsLazyPagingItems(),
             onDepositClick = {},
             onAddTransactionClick = {},
             onDepositValueChange = {},

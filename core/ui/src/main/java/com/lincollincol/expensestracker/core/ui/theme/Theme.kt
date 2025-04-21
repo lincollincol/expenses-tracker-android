@@ -7,17 +7,6 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-private val DarkColorScheme = darkColorScheme(
-    primary = VibrantOrange,
-    secondary = DarkNavyBlue,
-    background = LightGrey,
-    surface = Color.White,
-    onBackground = DarkNavyBlue,
-    onPrimary = LightGrey,
-    onSecondary = LightGrey,
-    outline = MediumGrey
-)
-
 private val LightColorScheme = lightColorScheme(
     primary = VibrantOrange,
     secondary = DarkNavyBlue,
@@ -31,16 +20,10 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun ExpensesTrackerTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
-
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = LightColorScheme,
         typography = Typography,
         content = content
     )
