@@ -38,6 +38,7 @@ fun NumberInput(
         placeholder = { Text("0") },
         onValueChange = onValueChange,
         maxLines = 1,
+        singleLine = true,
         shape = RoundedCornerShape(10.dp),
         suffix = {
             Text(text = suffix)

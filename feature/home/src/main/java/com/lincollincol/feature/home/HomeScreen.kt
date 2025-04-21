@@ -32,12 +32,13 @@ internal fun HomeRoute(
     HomeScreen(
         homeUiState = homeUiState,
         depositUiState = depositUiState,
-        onAddFundsClick = onAddFundsClick,
         onAddTransactionClick = onAddTransactionClick,
 
         // Screen-level events
+        onDepositClick = viewModel::depositToBalance,
         onDepositValueChange = viewModel::updateDepositValue,
         onDepositSaveClick = viewModel::saveDepositValue,
+        onDepositCloseClick = viewModel::cancelDepositToBalance
     )
 }
 
@@ -45,15 +46,12 @@ internal fun HomeRoute(
 internal fun HomeScreen(
     homeUiState: HomeUiState,
     depositUiState: DepositUiState,
-    onAddFundsClick: () -> Unit,
+    onDepositClick: () -> Unit,
     onAddTransactionClick: () -> Unit,
     onDepositValueChange: (String) -> Unit,
     onDepositSaveClick: () -> Unit,
+    onDepositCloseClick: () -> Unit,
 ) {
-//    DepositDialog(
-//        onDepositValueChange = onDepositValueChange,
-//        onDepositSaveClick = onDepositSaveClick
-//    )
     LazyColumn(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background)
@@ -64,10 +62,21 @@ internal fun HomeScreen(
             balanceBtc = homeUiState.balanceBtc,
             balanceUsd = homeUiState.balanceUsd,
             exchangeRateBtcUsd = homeUiState.exchangeRateBtcUsd,
-            onAddFundsClick = onAddFundsClick,
+            onAddFundsClick = onDepositClick,
             onAddTransactionClick = onAddTransactionClick
         )
         expensesSection()
+    }
+    if (depositUiState.isVisible) {
+        DepositDialog(
+            input = depositUiState.input,
+            equivalent = depositUiState.equivalent,
+            inputCurrency = depositUiState.inputCurrency,
+            equivalentCurrency = depositUiState.equivalentCurrency,
+            onDepositValueChange = onDepositValueChange,
+            onDepositSaveClick = onDepositSaveClick,
+            onDismiss = onDepositCloseClick
+        )
     }
 }
 
@@ -94,6 +103,7 @@ private fun LazyListScope.balanceSection(
     }
     item {
         BalanceBanner(
+            modifier = Modifier.padding(top = 24.dp),
             balanceBtc = balanceBtc,
             balanceUsd = balanceUsd,
             onAddFundsClick = onAddFundsClick,
@@ -136,10 +146,11 @@ private fun HomeScreenPreview() {
         HomeScreen(
             homeUiState = HomeUiState.Empty,
             depositUiState = DepositUiState.Empty,
-            onAddFundsClick = {},
+            onDepositClick = {},
             onAddTransactionClick = {},
             onDepositValueChange = {},
-            onDepositSaveClick = {}
+            onDepositSaveClick = {},
+            onDepositCloseClick = {}
         )
     }
 }

@@ -9,7 +9,7 @@ import java.util.Locale
 @Composable
 fun rememberCurrencyValueFormatter(
     locale: Locale = Locale.getDefault(),
-    pattern: String = "#,##0.00"
+    pattern: String = DF_PATTERN_CURRENCY_PREVIEW
 ): DecimalFormat {
     return remember {
         DecimalFormat(pattern, DecimalFormatSymbols(locale).apply {

@@ -16,21 +16,29 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.lincollincol.core.ui.component.ETButton
 import com.lincollincol.core.ui.component.NumberInput
+import com.lincollincol.core.ui.extensions.rememberCurrencyValueFormatter
 import com.lincollincol.core.ui.theme.ExpensesTrackerTheme
 
 @Composable
 fun DepositDialog(
     modifier: Modifier = Modifier,
+    input: String?,
+    equivalent: Float,
+    inputCurrency: String,
+    equivalentCurrency: String,
     onDepositValueChange: (String) -> Unit,
     onDepositSaveClick: () -> Unit,
+    onDismiss: () -> Unit,
 ) {
-    Dialog(onDismissRequest = {  }) {
+    Dialog(onDismissRequest = onDismiss) {
+        val formatter = rememberCurrencyValueFormatter()
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(14.dp))
                 .background(MaterialTheme.colorScheme.background)
-                .padding(horizontal = 24.dp, vertical = 32.dp),
+                .padding(horizontal = 24.dp, vertical = 32.dp)
+                .then(modifier),
         ) {
             Text(
                 modifier = Modifier.padding(bottom = 24.dp),
@@ -43,13 +51,13 @@ fun DepositDialog(
             )
             NumberInput(
                 modifier = Modifier.padding(vertical = 12.dp),
-                value = "",
-                suffix = "USD",
+                value = input.orEmpty(),
+                suffix = inputCurrency,
                 onValueChange = onDepositValueChange,
                 onSuffixClick = onDepositSaveClick
             )
             Text(
-                text = "68 272,12 USD",
+                text = "${formatter.format(equivalent)} $equivalentCurrency",
                 style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp),
             )
             ETButton(
@@ -68,8 +76,13 @@ fun DepositDialog(
 private fun DepositDialogPreview() {
     ExpensesTrackerTheme {
         DepositDialog(
+            input = null,
+            equivalent = 0F,
+            inputCurrency = "BTC",
+            equivalentCurrency = "USD",
             onDepositValueChange = {},
-            onDepositSaveClick = {}
+            onDepositSaveClick = {},
+            onDismiss = {}
         )
     }
 }

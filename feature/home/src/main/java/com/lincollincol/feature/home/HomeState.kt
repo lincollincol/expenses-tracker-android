@@ -11,11 +11,19 @@ internal data class HomeUiState(
 }
 
 internal data class DepositUiState(
-    val amount: Float,
+    val input: String?,
     val equivalent: Float,
+    val inputCurrency: String,
+    val equivalentCurrency: String,
     val isVisible: Boolean
 ) {
     companion object {
-        val Empty get() = DepositUiState(0F, 0F, false)
+        val Empty get() = DepositUiState(
+            input = null,
+            equivalent = 0F,
+            inputCurrency = "BTC",
+            equivalentCurrency = "USD",
+            isVisible = false
+        )
     }
 }

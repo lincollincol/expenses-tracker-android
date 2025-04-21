@@ -35,26 +35,31 @@ import java.text.DecimalFormat
 
 @Composable
 fun SectionHeading(
+    modifier: Modifier = Modifier,
     text: String,
     trailingContent: @Composable RowScope.() -> Unit = {}
 ) {
-    Row(
+    Column(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background)
-            .padding(top = 24.dp, bottom = 16.dp)
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
+            .then(modifier)
     ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.headlineMedium,
+        Row(
+            modifier = Modifier
+                .padding(top = 24.dp, bottom = 16.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.headlineMedium,
+            )
+            trailingContent(this)
+        }
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.outline
         )
-        trailingContent(this)
     }
-    HorizontalDivider(
-        modifier = Modifier.padding(bottom = 24.dp),
-        color = MaterialTheme.colorScheme.outline
-    )
 }
 
 @Preview
