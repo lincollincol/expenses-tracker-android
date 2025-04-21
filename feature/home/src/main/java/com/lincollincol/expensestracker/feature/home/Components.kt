@@ -28,6 +28,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lincollincol.expensestracker.core.ui.component.ETButton
@@ -65,16 +67,15 @@ internal fun TransactionItem(
             modifier = Modifier
                 .size(48.dp)
                 .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.75F)),
+                .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.85F)),
             painter = painterResource(icon),
-            contentDescription = "",
+            contentDescription = stringResource(name),
             contentScale = ContentScale.None,
             colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondary)
         )
         Column(
             modifier = Modifier
                 .padding(horizontal = 8.dp)
-                .weight(1F)
         ) {
             Text(
                 text = stringResource(name),
@@ -88,9 +89,13 @@ internal fun TransactionItem(
             )
         }
         Text(
+            modifier = Modifier.weight(1F),
             text = expense,
             style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.SemiBold
+            fontWeight = FontWeight.SemiBold,
+            textAlign = TextAlign.End,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1
         )
     }
 }
@@ -104,7 +109,7 @@ private fun TransactionItemPreview() {
             icon = com.lincollincol.expensestracker.core.ui.R.drawable.ic_btc,
             name = com.lincollincol.expensestracker.core.ui.R.string.category_other,
             date = System.currentTimeMillis(),
-            expense = "0,01 BTC"
+            expense = "0,0001 BTC"
         )
     }
 }

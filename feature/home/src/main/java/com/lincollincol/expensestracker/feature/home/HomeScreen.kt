@@ -42,7 +42,8 @@ internal fun HomeRoute(
         onAddTransactionClick = onAddTransactionClick,
 
         // Screen-level events
-        onDepositClick = viewModel::depositToBalance,
+//        onDepositClick = viewModel::depositToBalance,
+        onDepositClick = { viewModel.test() },
         onDepositValueChange = viewModel::updateDepositValue,
         onDepositSaveClick = viewModel::saveDepositValue,
         onDepositCloseClick = viewModel::cancelDepositToBalance

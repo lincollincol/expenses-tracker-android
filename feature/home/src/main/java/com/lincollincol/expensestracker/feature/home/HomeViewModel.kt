@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -46,6 +47,13 @@ internal class HomeViewModel @Inject constructor(
     val depositUiState get() = _depositUiState.asStateFlow()
 
     private val depositInputRegex = Regex(REGEX_PATTERN_CURRENCY_INPUT)
+
+    fun test() {
+        viewModelScope.launch {
+            val rate = exchangeRepository.getExchangeRate("")
+            println("=> $rate")
+        }
+    }
 
     fun updateDepositValue(value: String) {
         _depositUiState.update {
