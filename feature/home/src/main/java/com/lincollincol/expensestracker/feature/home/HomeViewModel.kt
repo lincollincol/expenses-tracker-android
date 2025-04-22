@@ -8,6 +8,7 @@ import com.lincollincol.expensestracker.core.common.REGEX_PATTERN_CURRENCY_INPUT
 import com.lincollincol.expensestracker.core.data.AccountRepository
 import com.lincollincol.expensestracker.core.data.ExchangeRepository
 import com.lincollincol.expensestracker.core.data.TransactionRepository
+import com.lincollincol.expensestracker.core.model.Transaction
 import com.lincollincol.expensestracker.core.ui.extensions.parseFloatInput
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,9 +29,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 internal class HomeViewModel @Inject constructor(
+    exchangeRepository: ExchangeRepository,
+    transactionRepository: TransactionRepository,
     private val accountRepository: AccountRepository,
-    private val exchangeRepository: ExchangeRepository,
-    private val transactionRepository: TransactionRepository,
 ) : ViewModel() {
 
     val balanceUiState: StateFlow<BalanceUiState> = combine(
@@ -42,7 +43,6 @@ internal class HomeViewModel @Inject constructor(
             balanceUsd = exchangeRate?.priceUsd?.times(account.balance),
             exchangeRateBtcUsd = exchangeRate?.priceUsd,
             exchangeRateChangePercent = exchangeRate?.changePercent,
-//            transactions = transactions.groupBy { formatTimestamp(it.date) }
         )
     }
         .stateIn(

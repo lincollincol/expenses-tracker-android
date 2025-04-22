@@ -124,48 +124,6 @@ internal fun TransactionScreen(
     }
 }
 
-@Composable
-fun CategoryItem(
-    modifier: Modifier = Modifier,
-    categoryUiState: CategoryItemUiState,
-    onClick: (Transaction.Category) -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(14.dp))
-            .clickable { onClick(categoryUiState.category) }
-            .padding(12.dp)
-            .then(modifier),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        val imageColor = with (MaterialTheme.colorScheme) {
-            if (categoryUiState.isSelected) background else onBackground
-        }
-        val imageContainerColor = with (MaterialTheme.colorScheme) {
-            if (categoryUiState.isSelected) primary else background
-        }
-        Image(
-            modifier = Modifier
-                .size(48.dp)
-                .clip(CircleShape)
-                .background(imageContainerColor),
-            painter = painterResource(categoryUiState.category.iconRes),
-            contentDescription = stringResource(categoryUiState.category.nameRes),
-            contentScale = ContentScale.None,
-            colorFilter = ColorFilter.tint(imageColor)
-        )
-        Text(
-            modifier = Modifier.padding(horizontal = 8.dp),
-            text = stringResource(categoryUiState.category.nameRes),
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold
-        )
-    }
-
-}
-
 private fun LazyListScope.inputSection(
     input: String?,
     transactionUiState: TransactionUiState,

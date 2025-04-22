@@ -26,7 +26,6 @@ internal fun Project.configureBaseAndroid(
         }
     }
     configureKotlinOptions()
-//    configureKapt()
 }
 
 private fun Project.configureKotlinOptions() = configure<KotlinAndroidProjectExtension> {
@@ -34,7 +33,3 @@ private fun Project.configureKotlinOptions() = configure<KotlinAndroidProjectExt
         jvmTarget.set(JvmTarget.JVM_11)
     }
 }
-
-//private fun Project.configureKapt() = configure<KaptExtension> {
-//    correctErrorTypes = true
-//}
