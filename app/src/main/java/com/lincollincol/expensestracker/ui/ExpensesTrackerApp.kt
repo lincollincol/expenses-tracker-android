@@ -24,7 +24,6 @@ fun ExpensesTrackerApp() {
             startDestination = HomeScreen
         ) {
             homeScreen(
-                onAddFundsClick = {},
                 onAddTransactionClick = { navController.navigateToTransaction() }
             )
             transactionScreen(

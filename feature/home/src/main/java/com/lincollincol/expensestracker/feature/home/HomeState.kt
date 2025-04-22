@@ -2,6 +2,7 @@ package com.lincollincol.expensestracker.feature.home
 
 import com.lincollincol.expensestracker.core.model.Currency
 import com.lincollincol.expensestracker.core.model.Transaction
+import com.lincollincol.expensestracker.core.ui.extensions.parseFloatInput
 
 internal data class BalanceUiState(
     val balanceBtc: Float,
@@ -34,7 +35,7 @@ internal data class DepositUiState(
         )
     }
 
-    private val inputNum get() = input?.replace(',', '.')?.toFloatOrNull() ?: 0F
+    private val inputNum get() = input.parseFloatInput()
 
     val equivalent: Float get() {
         return when(equivalentCurrency) {

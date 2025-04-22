@@ -4,10 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.insertSeparators
 import androidx.paging.map
+import com.lincollincol.expensestracker.core.common.REGEX_PATTERN_CURRENCY_INPUT
 import com.lincollincol.expensestracker.core.data.AccountRepository
 import com.lincollincol.expensestracker.core.data.ExchangeRepository
 import com.lincollincol.expensestracker.core.data.TransactionRepository
-import com.lincollincol.expensestracker.core.model.Transaction
+import com.lincollincol.expensestracker.core.ui.extensions.parseFloatInput
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -71,14 +72,7 @@ internal class HomeViewModel @Inject constructor(
     private val _depositUiState = MutableStateFlow(DepositUiState.Empty)
     val depositUiState get() = _depositUiState.asStateFlow()
 
-//    private val depositInputRegex = Regex(REGEX_PATTERN_CURRENCY_INPUT)
-    private val depositInputRegex = Regex("^\\d*(,\\d*)?$")
-
-    fun maket() {
-        viewModelScope.launch {
-            transactionRepository.makeTransaction(0F, Transaction.Category.OTHER)
-        }
-    }
+    private val depositInputRegex = Regex(REGEX_PATTERN_CURRENCY_INPUT)
 
     fun updateDepositValue(value: String) {
         _depositUiState.update {
@@ -91,9 +85,12 @@ internal class HomeViewModel @Inject constructor(
     }
 
     fun saveDepositValue() {
-        // TODO: update balance
-//        accountRepository.makeTransaction()
-        cancelDepositToBalance()
+        viewModelScope.launch {
+            val amount = depositUiState.value.input.parseFloatInput()
+            accountRepository.depositToAccountBalance(amount)
+            _depositUiState.update { DepositUiState.Empty }
+            cancelDepositToBalance()
+        }
     }
 
     fun depositToBalance() {

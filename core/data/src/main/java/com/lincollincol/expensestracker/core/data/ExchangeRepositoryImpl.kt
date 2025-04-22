@@ -10,6 +10,8 @@ import com.lincollincol.expensestracker.core.database.entity.ExchangeRateEntity
 import com.lincollincol.expensestracker.core.model.ExchangeRate
 import com.lincollincol.expensestracker.core.network.ExchangeApiService
 import jakarta.inject.Inject
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -18,17 +20,20 @@ import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.withContext
 
 internal class ExchangeRepositoryImpl @Inject constructor(
     private val service: ExchangeApiService,
     private val exchangeRateDao: ExchangeRateDao,
     private val accountDao: AccountDao,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ): ExchangeRepository {
 
-    override suspend fun syncExchangeRate(currencyId: String) {
+    override suspend fun syncExchangeRate(currencyId: String) = withContext(ioDispatcher) {
         val localRate = exchangeRateDao.select(currencyId)
         if (localRate == null || localRate.elapsedTime > HOUR_IN_MILLIS) {
-            val latestRate = service.getExchangeRate(currencyId).data?.entity() ?: return
+            val latestRate = service.getExchangeRate(currencyId).data?.entity()
+                ?: return@withContext
             exchangeRateDao.upsert(latestRate)
         }
     }
@@ -46,9 +51,7 @@ internal class ExchangeRepositoryImpl @Inject constructor(
     override fun getAccountExchangeRateStream(): Flow<ExchangeRate?> {
         return flow { accountDao.selectAccount()?.let { emit(it.currencyId) } }
             .flatMapConcat { currencyId ->
-                exchangeRateDao.selectStream(currencyId).map {
-                    println("=> $it")
-                    it?.domain() }
+                exchangeRateDao.selectStream(currencyId).map { it?.domain() }
             }
     }
 

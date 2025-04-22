@@ -22,5 +22,3 @@ val Transaction.Category.nameRes get() = when(this) {
     Transaction.Category.RESTAURANT -> R.string.category_restaurant
     Transaction.Category.OTHER -> R.string.category_other
 }
-
-val Transaction.formattedExpense get() = "$amount $currency"

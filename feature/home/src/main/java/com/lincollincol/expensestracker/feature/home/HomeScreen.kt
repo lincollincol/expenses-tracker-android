@@ -2,16 +2,19 @@ package com.lincollincol.expensestracker.feature.home
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
@@ -24,9 +27,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.lincollincol.expensestracker.core.model.Transaction
+import com.lincollincol.expensestracker.core.common.DF_PATTERN_USD_PREVIEW
 import com.lincollincol.expensestracker.core.ui.component.SectionHeading
-import com.lincollincol.expensestracker.core.ui.extensions.formattedExpense
+import com.lincollincol.expensestracker.core.ui.extensions.asDisplayPercent
 import com.lincollincol.expensestracker.core.ui.extensions.iconRes
 import com.lincollincol.expensestracker.core.ui.extensions.nameRes
 import com.lincollincol.expensestracker.core.ui.extensions.rememberCurrencyValueFormatter
@@ -34,12 +37,10 @@ import com.lincollincol.expensestracker.core.ui.theme.DarkGreen
 import com.lincollincol.expensestracker.core.ui.theme.DarkRed
 import com.lincollincol.expensestracker.core.ui.theme.ExpensesTrackerTheme
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 internal fun HomeRoute(
     viewModel: HomeViewModel = hiltViewModel(),
-    onAddFundsClick: () -> Unit,
     onAddTransactionClick: () -> Unit
 ) {
     val homeUiState by viewModel.balanceUiState.collectAsStateWithLifecycle()
@@ -50,10 +51,7 @@ internal fun HomeRoute(
         balanceUiState = homeUiState,
         depositUiState = depositUiState,
         transactionsUiItems = transactionsUiItems,
-//        onAddTransactionClick = onAddTransactionClick,
-        onAddTransactionClick = { viewModel.maket() },
-
-        // Screen-level events
+        onAddTransactionClick = onAddTransactionClick,
         onDepositClick = viewModel::depositToBalance,
         onDepositValueChange = viewModel::updateDepositValue,
         onDepositSaveClick = viewModel::saveDepositValue,
@@ -83,7 +81,7 @@ internal fun HomeScreen(
             balanceUsd = balanceUiState.balanceUsd,
             exchangeRateBtcUsd = balanceUiState.exchangeRateBtcUsd,
             exchangeRateChangePercent = balanceUiState.exchangeRateChangePercent,
-            onAddFundsClick = onDepositClick,
+            onDepositClick = onDepositClick,
             onAddTransactionClick = onAddTransactionClick
         )
         expensesSection(transactionsUiItems)
@@ -107,12 +105,12 @@ private fun LazyListScope.balanceSection(
     balanceUsd: Float?,
     exchangeRateBtcUsd: Float?,
     exchangeRateChangePercent: Float?,
-    onAddFundsClick: () -> Unit,
+    onDepositClick: () -> Unit,
     onAddTransactionClick: () -> Unit
 ) {
     stickyHeader {
         SectionHeading(text = "Balance") {
-            val formatter = rememberCurrencyValueFormatter()
+            val formatter = rememberCurrencyValueFormatter(pattern = DF_PATTERN_USD_PREVIEW)
             if (exchangeRateBtcUsd != null && exchangeRateChangePercent != null) {
                 val percentColor = if (exchangeRateChangePercent >= 0) DarkGreen else DarkRed
                 Text(
@@ -120,7 +118,7 @@ private fun LazyListScope.balanceSection(
                     text = buildAnnotatedString {
                         append("${formatter.format(exchangeRateBtcUsd)} USD/BTC")
                         withStyle(style = SpanStyle(color = percentColor)) {
-                            append(" (${formatter.format(exchangeRateChangePercent)}%)")
+                            append(" (${exchangeRateChangePercent.asDisplayPercent()})")
                         }
                     },
                     style = MaterialTheme.typography.labelMedium,
@@ -136,7 +134,7 @@ private fun LazyListScope.balanceSection(
             modifier = Modifier.padding(top = 24.dp),
             balanceBtc = balanceBtc,
             balanceUsd = balanceUsd,
-            onAddFundsClick = onAddFundsClick,
+            onAddFundsClick = onDepositClick,
             onAddTransactionClick = onAddTransactionClick
         )
     }
@@ -147,7 +145,22 @@ private fun LazyListScope.expensesSection(
     transactionsUiItems: LazyPagingItems<TransactionUiState>,
 ) {
     stickyHeader {
-        SectionHeading(text = "Operations")
+        SectionHeading(text = "Expenses")
+    }
+    if (transactionsUiItems.itemCount <= 0) {
+        item {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillParentMaxHeight(0.3F),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "No records yet",
+                    style = MaterialTheme.typography.titleMedium,
+                )
+            }
+        }
     }
     items(transactionsUiItems.itemCount) {
         val item = transactionsUiItems[it]
@@ -161,7 +174,8 @@ private fun LazyListScope.expensesSection(
             TransactionItem(
                 icon = item.transaction.category.iconRes,
                 name = item.transaction.category.nameRes,
-                expense = item.transaction.formattedExpense,
+                expense = item.transaction.amount,
+                currency = item.transaction.currency.name,
                 date = item.transaction.date
             )
         }

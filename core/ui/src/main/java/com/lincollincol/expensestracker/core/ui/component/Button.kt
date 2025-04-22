@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 fun ETButton(
     modifier: Modifier = Modifier,
     colors: ButtonColors = ButtonDefaults.buttonColors(),
+    enabled: Boolean = true,
     onClick: () -> Unit,
     text: String,
 ) {
@@ -30,7 +31,8 @@ fun ETButton(
             vertical = 16.dp
         ),
         shape = RoundedCornerShape(14.dp),
-        colors = colors
+        colors = colors,
+        enabled = enabled
     ) {
         Text(
             text = text,

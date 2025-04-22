@@ -33,11 +33,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.lincollincol.expensestracker.core.common.DF_PATTERN_BTC_PREVIEW
+import com.lincollincol.expensestracker.core.common.DF_PATTERN_EXPENSE_PREVIEW
+import com.lincollincol.expensestracker.core.common.DF_PATTERN_USD_PREVIEW
 import com.lincollincol.expensestracker.core.ui.component.ETButton
 import com.lincollincol.expensestracker.core.ui.extensions.rememberCurrencyValueFormatter
 import com.lincollincol.expensestracker.core.ui.extensions.rememberTimeFormatter
 import com.lincollincol.expensestracker.core.ui.theme.ExpensesTrackerTheme
-import java.text.SimpleDateFormat
 
 @Composable
 internal fun TransactionItem(
@@ -45,10 +47,12 @@ internal fun TransactionItem(
     @DrawableRes icon: Int,
     @StringRes name: Int,
     date: Long,
-    expense: String,
+    expense: Float,
+    currency: String,
     paddings: PaddingValues = PaddingValues(bottom = 4.dp),
 ) {
     val timeFormatter = rememberTimeFormatter()
+    val currencyFormatter = rememberCurrencyValueFormatter(pattern = DF_PATTERN_EXPENSE_PREVIEW)
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -91,7 +95,7 @@ internal fun TransactionItem(
         }
         Text(
             modifier = Modifier.weight(1F),
-            text = expense,
+            text = "${currencyFormatter.format(expense)} $currency",
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.SemiBold,
             textAlign = TextAlign.End,
@@ -110,7 +114,8 @@ private fun TransactionItemPreview() {
             icon = com.lincollincol.expensestracker.core.ui.R.drawable.ic_btc,
             name = com.lincollincol.expensestracker.core.ui.R.string.category_other,
             date = System.currentTimeMillis(),
-            expense = "0,0001 BTC"
+            expense = 0.0001F,
+            currency = "BTC"
         )
     }
 }
@@ -124,7 +129,8 @@ internal fun BalanceBanner(
     onAddTransactionClick: () -> Unit
 ) {
     Column(modifier) {
-        val formatter = rememberCurrencyValueFormatter()
+        val btcFormatter = rememberCurrencyValueFormatter(pattern = DF_PATTERN_BTC_PREVIEW)
+        val usdFormatter = rememberCurrencyValueFormatter(pattern = DF_PATTERN_USD_PREVIEW)
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -141,12 +147,12 @@ internal fun BalanceBanner(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = "${formatter.format(balanceBtc)} BTC",
+                text = "${btcFormatter.format(balanceBtc)} BTC",
                 style = MaterialTheme.typography.titleLarge,
             )
             if (balanceUsd != null) {
                 Text(
-                    text = "${formatter.format(balanceUsd)} USD",
+                    text = "${usdFormatter.format(balanceUsd)} USD",
                     style = MaterialTheme.typography.titleMedium,
                 )
             }

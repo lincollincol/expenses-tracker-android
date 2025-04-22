@@ -15,8 +15,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.lincollincol.expensestracker.core.common.DF_PATTERN_USD_PREVIEW
 import com.lincollincol.expensestracker.core.ui.component.ETButton
-import com.lincollincol.expensestracker.core.ui.component.NumberInput
+import com.lincollincol.expensestracker.core.ui.component.AmountInput
 import com.lincollincol.expensestracker.core.ui.extensions.rememberCurrencyValueFormatter
 import com.lincollincol.expensestracker.core.ui.theme.ExpensesTrackerTheme
 
@@ -32,7 +33,7 @@ fun DepositDialog(
     onDismiss: () -> Unit,
 ) {
     Dialog(onDismissRequest = onDismiss) {
-        val formatter = rememberCurrencyValueFormatter()
+        val formatter = rememberCurrencyValueFormatter(pattern = DF_PATTERN_USD_PREVIEW)
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -47,12 +48,11 @@ fun DepositDialog(
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.SemiBold
             )
-            NumberInput(
+            AmountInput(
                 modifier = Modifier.padding(vertical = 12.dp),
                 value = input.orEmpty(),
                 suffix = inputCurrency,
-                onValueChange = onDepositValueChange,
-                onSuffixClick = onDepositSaveClick
+                onValueChange = onDepositValueChange
             )
             Text(
                 text = "${formatter.format(equivalent)} $equivalentCurrency",
@@ -63,7 +63,7 @@ fun DepositDialog(
                     .padding(top = 24.dp)
                     .fillMaxWidth(),
                 text = "Save",
-                onClick = {}
+                onClick = onDepositSaveClick
             )
         }
     }

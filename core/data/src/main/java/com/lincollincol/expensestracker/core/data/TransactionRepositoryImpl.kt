@@ -23,25 +23,26 @@ internal class TransactionRepositoryImpl @Inject constructor(
 ) : TransactionRepository {
 
     override suspend fun makeTransaction(amount: Float, category: Transaction.Category) {
-        val dayInMillis = 86400000L
-        val transactions = buildList {
-            val ts = System.currentTimeMillis()
-            repeat(50) { day ->
-                repeat(Random.nextInt(2..6)) { item ->
-                    add(
-                        Transaction(
-                            Random.nextInt().toString(),
-                            currency = Currency.BTC,
-                            amount = Random.nextFloat(),
-                            category = Transaction.Category.entries.random(),
-                            date = ts - (day * dayInMillis)
-                        )
-                    )
-                }
-            }
-        }.map { it.entity() }
-
-        transactionDao.insert(transactions)
+//        val dayInMillis = 86400000L
+//        val transactions = buildList {
+//            val ts = System.currentTimeMillis()
+//            repeat(50) { day ->
+//                repeat(Random.nextInt(2..6)) { item ->
+//                    add(
+//                        Transaction(
+//                            Random.nextInt().toString(),
+//                            currency = Currency.BTC,
+//                            amount = Random.nextFloat(),
+//                            category = Transaction.Category.entries.random(),
+//                            date = ts - (day * dayInMillis)
+//                        )
+//                    )
+//                }
+//            }
+//        }.map { it.entity() }
+//
+//        transactionDao.insert(transactions)
+        transactionDao.insert(Transaction.create(amount, category).entity())
     }
 
     override fun getTransactionsStream(): Flow<PagingData<Transaction>> {

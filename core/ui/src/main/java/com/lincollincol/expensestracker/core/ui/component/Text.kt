@@ -25,8 +25,9 @@ import androidx.compose.ui.unit.sp
 import com.lincollincol.expensestracker.core.ui.theme.ExpensesTrackerTheme
 
 @Composable
-fun NumberInput(
+fun AmountInput(
     modifier: Modifier = Modifier,
+    hint: String = "Amount",
     value: String,
     suffix: String,
     onValueChange: (String) -> Unit,
@@ -43,7 +44,7 @@ fun NumberInput(
         value = value,
         placeholder = {
             Text(
-                text ="Amount",
+                text = hint,
                 color = TextFieldDefaults.colors().focusedTextColor.copy(0.5F)
             )
         },
@@ -72,7 +73,7 @@ fun NumberInput(
 @Composable
 private fun NumberInputPreview() {
     ExpensesTrackerTheme {
-        NumberInput(
+        AmountInput(
             value = "12",
             suffix = "USD",
             onValueChange = {},
